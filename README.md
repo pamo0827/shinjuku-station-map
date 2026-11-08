@@ -3,7 +3,11 @@
 新宿駅の構内図（地下7階〜4階、立体図、経路の案内図）を、GitHub Pages で公開するためのリポジトリです。
 
 - ページ: `site/`（静的な HTML。`main` に push すると GitHub Actions で公開されます）
-- 公開先: https://pamo0827.github.io/shinjuku-station-map/
+- 公開先: https://pamo0827.github.io/shinjuku-station-map/ （最初に立体図が開きます）
+
+## 謝辞
+
+階を重ねて立体で見せる表し方は、satoshi7190 さんの [Shinjuku-indoor-threejs-demo](https://satoshi7190.github.io/Shinjuku-indoor-threejs-demo/)（[解説記事](https://qiita.com/satoshi7190/items/23d192372877af75b283)）をリスペクトして作りました。コードは自分たちで書き直しています。
 
 ## データの出典
 
