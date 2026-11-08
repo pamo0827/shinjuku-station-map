@@ -100,7 +100,7 @@ footer a{color:var(--primary)}
           <li><span class="sw" style="background:repeating-linear-gradient(0deg,var(--m-vert-line) 0 1px,#fff 1px 4px)"></span>階段・エスカレーター</li>
           <li><span class="sw" style="background:#fff;width:20px"></span>地上への出口の番号</li>
           <li class="road-legend"><span class="sw" style="background:#C9C9C9;border-color:#9A9A9A"></span>道路（OpenStreetMap）</li>
-          <li class="platform-legend"><span class="sw" style="background:repeating-linear-gradient(45deg,#B9D7F0 0 4px,#fff 4px 6px);border:1px solid var(--m-platform-line)"></span>ホーム（各社の図から写した、おおよその位置）</li>
+          <li class="platform-legend"><span class="sw" style="background:#F8D3E3;border-color:#9C9C9C"></span>ホーム（各社の図から写した、おおよその位置）</li>
         </ul>
       </section>
       <section>
@@ -108,8 +108,7 @@ footer a{color:var(--primary)}
         <ul>
           <li><span class="sw" style="background:#FFD400"></span>改札（左の色の印が会社）</li>
           <li class="chips"><span><span class="sw" style="background:var(--co-jr)"></span>JR</span><span><span class="sw" style="background:var(--co-keio)"></span>京王</span><span><span class="sw" style="background:var(--co-odakyu)"></span>小田急</span><span><span class="sw" style="background:var(--co-metro)"></span>東京メトロ</span><span><span class="sw" style="background:var(--co-toei)"></span>都営</span><span><span class="sw" style="background:var(--co-seibu)"></span>西武</span></li>
-          <li><span class="sw" style="background:#F8D3E3"></span>改札の中（データで確かめた所）</li>
-          <li><span class="sw" style="background:repeating-linear-gradient(45deg,#F8D3E3 0 4px,#fff 4px 6px)"></span>改札の中（推定）</li>
+          <li><span class="sw" style="background:#F8D3E3"></span>改札の中・ホーム</li>
           <li><span class="sw" style="background:#FFD400;box-shadow:inset 4px 0 0 var(--co-jr),inset 8px 0 0 var(--co-keio)"></span>乗り換え改札（印が2つ。左に「乗換」）</li>
           <li><span class="sw" style="background:#fff"></span>店の入口・連絡口</li>
           <li class="link-legend"><span class="sw dash"></span>JR の連絡通路（階段で上り下り）</li>
@@ -223,7 +222,7 @@ const RAIL = new Set(["2.JR新宿駅新南改札", "3.JR新宿駅", "5.東京メ
   const defs2 = el("defs", {});
   const clip = el("clipPath", { id: "floor-clip" }, defs2);
   D.floors.forEach((d) => el("path", { d }, clip));
-  D.floors.forEach((d, i) => { if (RAIL.has((D.floorsrc || [])[i]) && !(D.paid || [])[i]) el("path", { d, fill: "url(#paid-est)" }, base); }); // 推定なので斜線
+  D.floors.forEach((d, i) => { if (RAIL.has((D.floorsrc || [])[i]) && !(D.paid || [])[i]) el("path", { d, fill: PAID.tint }, base); });
   const back = el("g", { "clip-path": "url(#floor-clip)" }, base);
   for (const d of D.links) el("path", { d, fill: "none", stroke: "var(--m-walk)", "stroke-width": 18, "stroke-linecap": "butt", "stroke-linejoin": "round" }, back);
   // データで分かっている改札の中（JR の B1 など）は、もう一度ピンクで上から塗る
@@ -233,16 +232,23 @@ const RAIL = new Set(["2.JR新宿駅新南改札", "3.JR新宿駅", "5.東京メ
 // 各社の図から写した線路とホームは、国交省の床（通路・店など）と重なる所では描かない（床の下に隠す）。
 // 写した位置は数m ずれることがあり、床の上に重ねると、どこが歩ける所か分からなくなるため
 const platLayer = el("g", { mask: outsideMask }, base);
+const platStairs = el("g", {});
 for (const p of D.pois || []) if (p[0] === "rail") {
   el("path", { d: "M" + p[2].map((q) => q.join(",")).join(" L"), fill: "none", stroke: "#A8A8A8", "stroke-width": 0.8 }, platLayer);
 }
 // 各社の構内図から写したホーム（JR の 1F など）。国交省のデータにない所なので、点線で囲む
-for (const p of D.pois || []) if (p[0] === "platform") {
-  el("path", { d: "M" + p[2].map((q) => q.join(",")).join(" L") + "Z", fill: "url(#plat-est)", stroke: "var(--m-platform-line)", "stroke-width": 0.9 }, platLayer);
+// ホームの上の階段・エスカレーター（JR の 1F の図の位置）。縞の四角で描く
+for (const p of D.pois || []) if (p[0] === "updown") {
+  const [, , x, y] = p;
+  el("rect", { x: x - 1.6, y: y - 3, width: 3.2, height: 6, fill: "url(#hatch)", stroke: "#111", "stroke-width": 0.35 }, platStairs);
 }
+for (const p of D.pois || []) if (p[0] === "platform") {
+  el("path", { d: "M" + p[2].map((q) => q.join(",")).join(" L") + "Z", fill: PAID.tint, stroke: "#9C9C9C", "stroke-width": 0.5 }, platLayer);
+}
+base.appendChild(platStairs);
 // 各社の構内図から写した改札の中（京王のルミネ口の内側など）。床のデータで見分けられない所
 for (const p of D.pois || []) if (p[0] === "paidpoly") {
-  el("path", { d: "M" + p[2].map((q) => q.join(",")).join(" L") + "Z", fill: "url(#paid-est)", stroke: GATE_MARK, "stroke-width": 0.35, "stroke-dasharray": "1 0.6" }, base);
+  el("path", { d: "M" + p[2].map((q) => q.join(",")).join(" L") + "Z", fill: PAID.tint, stroke: GATE_MARK, "stroke-width": 0.35, "stroke-dasharray": "1 0.6" }, base);
 }
 // 床のデータがない屋外の歩道や歩道橋も、歩行空間ネットワークの線を太く描いて歩ける所として見せる
 for (const d of D.links) el("path", { d, fill: "none", stroke: "var(--m-walk)", "stroke-width": 2.6, "stroke-linecap": "round", "stroke-linejoin": "round" }, linkLayer);
@@ -547,7 +553,7 @@ for (const [name, pr] of Object.entries(PRIO)) {
     const b = node.getBBox();
     if (!b.width && !b.height) continue;
     const txt = node.textContent || "";
-    const minor = name === "pois" && !/WC/.test(txt) ? true : name === "vspaces-icon" ? false : false;
+    const minor = name === "pois" && !/WC|階段/.test(txt);
     units.push({ node, pr, cx: b.x + b.width / 2, cy: b.y + b.height / 2, w: b.width, h: b.height, name, minor });
   }
 }
