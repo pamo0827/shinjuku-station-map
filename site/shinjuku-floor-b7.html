@@ -130,6 +130,7 @@ footer a{color:var(--primary)}
           <li class="pois-legend"><span class="ic" style="background:#2E7D32">指</span>指定席券売機 <span class="ic" style="background:#B0283C;font-size:9px">ATM</span>ATM</li>
           <li class="platform-legend"><span class="ic" style="width:34px;font-size:10px">階段</span>ホームの階段・エスカレーター（JR の図から）</li>
           <li class="pois-legend"><span class="ic" style="font-size:10px">WC</span>トイレ <span class="ic" style="font-size:10px;box-shadow:inset 0 0 0 2px #FFD400">WC</span>多機能トイレ <span class="ic">?</span>案内</li>
+          <li class="pois-legend"><span class="ic" style="background:#00695C">売</span>売店 <span class="ic" style="background:#37474F">ロ</span>コインロッカー <span class="ic" style="background:#1565C0">待</span>待合室 <span class="ic" style="background:#C2185B">ベ</span>ベビー休憩室 <span class="ic" style="background:#C8102E;font-size:8px">AED</span>AED <span class="ic">☎</span>電話</li>
         </ul>
       </section>
     </div>
@@ -329,7 +330,9 @@ for (const p of D.pois || []) {
 }
 // JR の構内図から写した設備（きっぷうりば、精算所、トイレ、何番線への階段など）
 const pg = g("pois");
-const ICON = { ticket: ["券", "#111"], fare: ["精", "#111"], atm: ["ATM", "#B0283C"], reserved: ["指", "#2E7D32"], info: ["?", "#111"], wc: ["WC", "#111"], wca: ["WC", "#111"] };
+const ICON = { ticket: ["券", "#111"], fare: ["精", "#111"], atm: ["ATM", "#B0283C"], reserved: ["指", "#2E7D32"], info: ["?", "#111"], wc: ["WC", "#111"], wca: ["WC", "#111"],
+  baby: ["ベ", "#C2185B"], aed: ["AED", "#C8102E"], locker: ["ロ", "#37474F"], phone: ["☎", "#111"], kiosk: ["売", "#00695C"], shop: ["店", "#4A4A68"], food: ["食", "#4A4A68"], cafe: ["カ", "#4A4A68"],
+  waiting: ["待", "#1565C0"], travelcenter: ["旅", "#2E7D32"], elevator: ["EV", "#111"], escalator: ["ES", "#111"], stairs: ["階段", "#111"] };
 for (const [k, n, x, y] of D.pois || []) {
   if (x < vx || x > vx + vw || y < vy || y > vy + vh) continue;
   if (k === "gate2" || k === "paidpoly" || k === "platform" || k === "rail") continue;
@@ -358,9 +361,15 @@ for (const [k, n, x, y] of D.pois || []) {
     } else t.textContent = n;
     continue;
   }
+  if (k === "jrtext" || k === "jrdir") {
+    const ug = el("g", {}, pg);
+    const t = el("text", { x, y: y + TY.sm * 0.35, "text-anchor": "middle", "font-size": TY.sm, "font-weight": 700, style: `fill:${k === "jrdir" ? "#0D47A1" : "#333"};stroke:#fff;stroke-width:0.6px` }, ug);
+    t.textContent = k === "jrdir" && !/へ|→|←|↑|↓/.test(n) ? n + "へ" : n;
+    continue;
+  }
   if (k === "area" || k === "track" || k === "note") {
     const t = el("text", { x, y, "text-anchor": "middle", "font-size": k === "area" ? TY.md : TY.sm, "font-weight": 700, style: `fill:${k === "area" ? "var(--m-area-text)" : k === "note" ? "#123A63" : "#333"};stroke:#fff;stroke-width:0.6px` }, pg);
-    t.textContent = k === "track" ? n + "へ" : n; // note は名前だけ（ホーム・エレベーターなど）
+    t.textContent = k === "track" && !/へ$/.test(n) ? n + "へ" : n; // note は名前だけ（ホーム・エレベーターなど）
     continue;
   }
   if (SHOP[k]) continue;
@@ -540,10 +549,10 @@ else document.querySelectorAll(".pois-legend").forEach((e) => e.remove());
 // ---- 文字と記号の大きさと重なり ----
 // 地図の単位（m）で描いた文字や記号を、画面の上でいつも同じ大きさに見えるよう拡大・縮小する。
 // TY.md（2.8）の文字が画面の上で LABEL_PX になる。重なるものは、大事な順（PRIO）に残し、ほかは隠す。
-const LABEL_PX = 13;
+const LABEL_PX = 10;
 const PRIO = { labels: 0, marks: 0, paidnames: 1, "jr-link": 1, areas: 2, roads: 2, exits: 3, "vspaces-icon": 3, icons: 4, pois: 4, shops: 6 };
 // 縮小しているとき（画面の 1px が DETAIL_MPP m より大きいとき）は出さない、細かい設備や添え書き
-const DETAIL_MPP = 0.11;
+const DETAIL_MPP = 0.3;
 const units = [];
 for (const [name, pr] of Object.entries(PRIO)) {
   const grp = svg.querySelector(`g.${name}`);
@@ -553,7 +562,7 @@ for (const [name, pr] of Object.entries(PRIO)) {
     const b = node.getBBox();
     if (!b.width && !b.height) continue;
     const txt = node.textContent || "";
-    const minor = name === "pois" && !/WC|階段/.test(txt);
+    const minor = name === "pois" && !/WC|階段|EV|ES|改札/.test(txt);
     units.push({ node, pr, cx: b.x + b.width / 2, cy: b.y + b.height / 2, w: b.width, h: b.height, name, minor });
   }
 }
