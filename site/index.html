@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新宿駅 構内図</title>
+<style>
+:root{--page:#F2F2F2;--surface:#FFFFFF;--fg:#1A1A1A;--muted:#4D4D4D;--divider:#CCCCCC;--primary:#0017C1;--focus:#FFD43D;
+  --font:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
+@media (prefers-color-scheme:dark){:root{--page:#111418;--surface:#1B1F25;--fg:#F2F2F2;--muted:#C2C7CE;--divider:#353B44;--primary:#9DB7FF;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--fg);font:16px/1.7 var(--font);padding:24px max(16px,env(safe-area-inset-left))}
+main{max-width:720px;margin:0 auto;display:grid;gap:24px}
+h1{margin:0;font-size:28px;line-height:1.4}
+h2{margin:0 0 8px;font-size:18px}
+p{margin:0}
+section{background:var(--surface);border:1px solid var(--divider);border-radius:16px;padding:16px 24px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+a.btn{display:inline-grid;place-items:center;min-width:64px;min-height:44px;padding:0 14px;border:1px solid var(--divider);border-radius:8px;color:var(--fg);text-decoration:none;font-weight:700;background:var(--page)}
+a.btn.primary{background:#0017C1;border-color:#0017C1;color:#fff}
+a:focus-visible{outline:4px solid #000;outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}
+.note{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>新宿駅 構内図</h1>
+  <p>国土交通省の屋内地図オープンデータをもとに、JR 東日本の駅構内図の描き方で作った新宿駅の構内図です。</p>
+  <section>
+    <h2>立体で見る</h2>
+    <ul><li><a class="btn primary" href="shinjuku-3d.html">全部の階を重ねた立体図</a></li></ul>
+  </section>
+  <section>
+    <h2>階ごとの構内図</h2>
+    <ul>
+      <li><a class="btn" href="shinjuku-floor-4f.html">4F</a></li>
+      <li><a class="btn" href="shinjuku-floor-3f.html">3F</a></li>
+      <li><a class="btn" href="shinjuku-floor-2f.html">2F</a></li>
+      <li><a class="btn" href="shinjuku-floor-1f.html">1F</a></li>
+      <li><a class="btn" href="shinjuku-floor-gl.html">地上</a></li>
+      <li><a class="btn" href="shinjuku-b1-floor.html">B1F</a></li>
+      <li><a class="btn" href="shinjuku-floor-b2.html">B2F</a></li>
+      <li><a class="btn" href="shinjuku-floor-b3.html">B3F</a></li>
+      <li><a class="btn" href="shinjuku-floor-b4.html">B4F</a></li>
+      <li><a class="btn" href="shinjuku-floor-b5.html">B5F</a></li>
+      <li><a class="btn" href="shinjuku-floor-b7.html">B7F</a></li>
+    </ul>
+  </section>
+  <section>
+    <h2>経路の案内図</h2>
+    <ul>
+      <li><a class="btn" href="station-route-guide.html">JR 南改札 → 新南口改札</a></li>
+      <li><a class="btn" href="west-to-keio-plaza.html">JR 西改札 → 京王線 広場口</a></li>
+    </ul>
+  </section>
+  <p class="note">地図：「新宿駅周辺屋内地図オープンデータ」（国土交通省）を加工して作成。道路とお店の位置：© OpenStreetMap contributors（ODbL）。設備の位置は各社の駅構内図を参考にした、おおよその位置です。改札の中（斜線）とホームは推定を含みます。</p>
+</main>
+</body>
+</html>
